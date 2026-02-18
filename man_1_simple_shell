@@ -1,1 +1,10 @@
+.TH hsh 1
+.SH NAME
+hsh - simple command interpreter
+.SH SYNOPSIS
+./hsh
+.SH DESCRIPTION
+hsh is a simple UNIX command interpreter that executes commands entered by the user.
+.SH AUTHORS
+Your Name
 
