@@ -19,7 +19,10 @@ int main(void)
 	while (1)
 	{
 		if (isatty(STDIN_FILENO))
-			printf("#cisfun$ "), fflush(stdout);
+		{
+			printf("#cisfun$ ");
+			fflush(stdout);
+		}
 
 		nread = getline(&line, &len, stdin);
 		if (nread == -1)
@@ -29,28 +32,36 @@ int main(void)
 			return (0);
 		}
 
-		if (line[nread - 1] == '\n')
+		if (nread > 0 && line[nread - 1] == '\n')
 			line[nread - 1] = '\0';
 
+		if (line[0] == '\0')
+			continue;
+
 		pid = fork();
+		if (pid == -1)
+		{
+			perror("fork");
+			free(line);
+			exit(1);
+		}
 		if (pid == 0)
 		{
 			char *args[2];
+
 			args[0] = line;
 			args[1] = NULL;
+
 			execve(line, args, environ);
 			perror("./shell");
+			free(line);
 			exit(1);
-		}
-		else if (pid > 0)
-		{
-			int status;
-			wait(&status);
 		}
 		else
 		{
-			perror("fork");
-			exit(1);
+			int status;
+
+			wait(&status);
 		}
 	}
 
