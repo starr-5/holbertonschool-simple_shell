@@ -1,7 +1,5 @@
 #include "shell.h"
 
-extern char **environ;
-
 /**
  * main - simple shell
  * Return: 0
@@ -16,23 +14,33 @@ int main(void)
 
 	while (1)
 	{
-		printf("$ ");
-		fflush(stdout);
+		/* Show prompt only if stdin is terminal */
+		if (isatty(STDIN_FILENO))
+		{
+			printf("#cisfun$ ");
+			fflush(stdout);
+		}
 
+		/* Read a line from stdin */
 		nread = getline(&line, &len, stdin);
+
+		/* Handle Ctrl+D or EOF */
 		if (nread == -1)
 		{
 			free(line);
+			if (isatty(STDIN_FILENO))
+				printf("\n");
 			exit(0);
 		}
 
+		/* Remove newline */
 		if (line[nread - 1] == '\n')
 			line[nread - 1] = '\0';
 
 		pid = fork();
 		if (pid == -1)
 		{
-			perror("Error");
+			perror("fork");
 			free(line);
 			exit(1);
 		}
@@ -42,7 +50,7 @@ int main(void)
 			char *argv[] = {line, NULL};
 
 			execve(line, argv, environ);
-			perror("Error");
+			perror("./shell"); /* Command not found */
 			exit(1);
 		}
 		else
@@ -51,5 +59,6 @@ int main(void)
 		}
 	}
 
+	free(line);
 	return (0);
 }

@@ -6,5 +6,6 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
-#endif /* SHELL_H */
+extern char **environ;
 
+#endif /* SHELL_H */
