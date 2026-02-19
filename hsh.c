@@ -29,7 +29,6 @@ int main(void)
 			return (0);
 		}
 
-		/* Remove newline */
 		if (line[nread - 1] == '\n')
 			line[nread - 1] = '\0';
 
