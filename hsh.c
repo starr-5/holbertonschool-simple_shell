@@ -1,5 +1,8 @@
 #include "shell.h"
 
+/**
+ * print_prompt - prints shell prompt
+ */
 void print_prompt(void)
 {
 	if (isatty(STDIN_FILENO))
@@ -9,6 +12,10 @@ void print_prompt(void)
 	}
 }
 
+/**
+ * read_line - reads a line from stdin
+ * Return: pointer to line string
+ */
 char *read_line(void)
 {
 	char *line = NULL;
@@ -27,9 +34,13 @@ char *read_line(void)
 	if (line[nread - 1] == '\n')
 		line[nread - 1] = '\0';
 
-	return line;
+	return (line);
 }
 
+/**
+ * execute_line - forks and executes a command line
+ * @line: command line string
+ */
 void execute_line(char *line)
 {
 	pid_t pid;
