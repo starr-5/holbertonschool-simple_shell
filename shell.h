@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
-/* You can add function prototypes later if you split code */
+
 int main(void);
 
-#endif /* SHELL_H */
+#endif 
