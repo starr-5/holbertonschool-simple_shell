@@ -1,4 +1,29 @@
 #include "shell.h"
+#include <string.h>
+#include <ctype.h>
+
+/**
+ * trim - remove leading/trailing spaces
+ * @s: string to trim
+ * Return: pointer to trimmed string (in-place)
+ */
+char *trim(char *s)
+{
+	char *end;
+
+	while (*s && isspace((unsigned char)*s))
+		s++;
+
+	if (*s == 0)
+		return s;
+
+	end = s + strlen(s) - 1;
+	while (end > s && isspace((unsigned char)*end))
+		end--;
+
+	end[1] = '\0';
+	return s;
+}
 
 /**
  * print_prompt - prints shell prompt
@@ -34,7 +59,7 @@ char *read_line(void)
 	if (line[nread - 1] == '\n')
 		line[nread - 1] = '\0';
 
-	return (line);
+	return trim(line);
 }
 
 /**
@@ -45,7 +70,10 @@ void execute_line(char *line)
 {
 	pid_t pid;
 	int status;
-	char *argv[2]; /* fix for pedantic C89/gnu89 */
+	char *argv[2];
+
+	if (line[0] == '\0') /* empty line */
+		return;
 
 	argv[0] = line;
 	argv[1] = NULL;
@@ -54,7 +82,6 @@ void execute_line(char *line)
 	if (pid == -1)
 	{
 		perror("fork");
-		free(line);
 		exit(1);
 	}
 
