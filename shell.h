@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
-
+/* for function prototypes */
 int main(void);
 
-#endif 
+#endif /* SHELL_H */
