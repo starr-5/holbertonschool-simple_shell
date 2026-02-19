@@ -1,101 +1,9 @@
-#include "shell.h"
-#include <string.h>
-#include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/wait.h>
 
-/**
- * trim - remove leading/trailing spaces
- * @s: string to trim
- * Return: pointer to trimmed string (in-place)
- */
-char *trim(char *s)
-{
-	char *end;
-
-	while (*s && isspace((unsigned char)*s))
-		s++;
-
-	if (*s == 0)
-		return s;
-
-	end = s + strlen(s) - 1;
-	while (end > s && isspace((unsigned char)*end))
-		end--;
-
-	end[1] = '\0';
-	return s;
-}
-
-/**
- * print_prompt - prints shell prompt
- */
-void print_prompt(void)
-{
-	if (isatty(STDIN_FILENO))
-	{
-		printf("#cisfun$ ");
-		fflush(stdout);
-	}
-}
-
-/**
- * read_line - reads a line from stdin
- * Return: pointer to line string
- */
-char *read_line(void)
-{
-	char *line = NULL;
-	size_t len = 0;
-	ssize_t nread;
-
-	nread = getline(&line, &len, stdin);
-	if (nread == -1)
-	{
-		free(line);
-		if (isatty(STDIN_FILENO))
-			printf("\n");
-		exit(0);
-	}
-
-	if (line[nread - 1] == '\n')
-		line[nread - 1] = '\0';
-
-	return trim(line);
-}
-
-/**
- * execute_line - forks and executes a command line
- * @line: command line string
- */
-void execute_line(char *line)
-{
-	pid_t pid;
-	int status;
-	char *argv[2];
-
-	if (line[0] == '\0') /* empty line */
-		return;
-
-	argv[0] = line;
-	argv[1] = NULL;
-
-	pid = fork();
-	if (pid == -1)
-	{
-		perror("fork");
-		exit(1);
-	}
-
-	if (pid == 0)
-	{
-		execve(line, argv, environ);
-		perror("./shell");
-		exit(1);
-	}
-	else
-	{
-		wait(&status);
-	}
-}
+extern char **environ;
 
 /**
  * main - simple shell
@@ -103,15 +11,50 @@ void execute_line(char *line)
  */
 int main(void)
 {
-	char *line;
+	char *line = NULL;
+	size_t len = 0;
+	ssize_t nread;
+	pid_t pid;
 
 	while (1)
 	{
-		print_prompt();
-		line = read_line();
-		execute_line(line);
-		free(line);
+		if (isatty(STDIN_FILENO))
+			printf("#cisfun$ "), fflush(stdout);
+
+		nread = getline(&line, &len, stdin);
+		if (nread == -1)
+		{
+			free(line);
+			putchar('\n');
+			return (0);
+		}
+
+		/* Remove newline */
+		if (line[nread - 1] == '\n')
+			line[nread - 1] = '\0';
+
+		pid = fork();
+		if (pid == 0)
+		{
+			char *args[2];
+			args[0] = line;
+			args[1] = NULL;
+			execve(line, args, environ);
+			perror("./shell");
+			exit(1);
+		}
+		else if (pid > 0)
+		{
+			int status;
+			wait(&status);
+		}
+		else
+		{
+			perror("fork");
+			exit(1);
+		}
 	}
 
+	free(line);
 	return (0);
 }
