@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
+/* Environment variables for execve */
 extern char **environ;
 
 #endif /* SHELL_H */
