@@ -32,9 +32,11 @@ int main(void)
 			return (0);
 		}
 
+		/* Remove newline at the end */
 		if (nread > 0 && line[nread - 1] == '\n')
 			line[nread - 1] = '\0';
 
+		/* Ignore empty lines */
 		if (line[0] == '\0')
 			continue;
 
@@ -47,12 +49,12 @@ int main(void)
 		}
 		if (pid == 0)
 		{
-			char *args[2];
+			char *argv[2];
 
-			args[0] = line;
-			args[1] = NULL;
+			argv[0] = line;
+			argv[1] = NULL;
 
-			execve(line, args, environ);
+			execve(line, argv, environ);
 			perror("./shell");
 			free(line);
 			exit(1);
