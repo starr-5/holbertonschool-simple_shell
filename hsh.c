@@ -45,6 +45,10 @@ void execute_line(char *line)
 {
 	pid_t pid;
 	int status;
+	char *argv[2]; /* fix for pedantic C89/gnu89 */
+
+	argv[0] = line;
+	argv[1] = NULL;
 
 	pid = fork();
 	if (pid == -1)
@@ -56,8 +60,6 @@ void execute_line(char *line)
 
 	if (pid == 0)
 	{
-		char *argv[] = {line, NULL};
-
 		execve(line, argv, environ);
 		perror("./shell");
 		exit(1);
